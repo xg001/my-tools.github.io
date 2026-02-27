@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的技术博客</title>
+    <title>李小刚的博客系统</title>
     <style>
         * {
             margin: 0;
@@ -15,13 +15,13 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background-color: #f8f9fa;
+            background-color: #f5f7fa;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 20px;
         }
         
         header {
@@ -30,6 +30,8 @@
             padding: 2rem 0;
             text-align: center;
             margin-bottom: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
         .header-content h1 {
@@ -37,70 +39,166 @@
             margin-bottom: 0.5rem;
         }
         
-        .header-content p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .tab-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            margin: 0 0.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover, .tab-btn.active {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
         }
         
         .main-content {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr 300px;
             gap: 2rem;
+        }
+        
+        .blog-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .blog-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .post-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
         
-        .blog-posts {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .post {
-            padding: 2rem;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .post:last-child {
-            border-bottom: none;
-        }
-        
-        .post-header {
+        .form-group {
             margin-bottom: 1rem;
         }
         
-        .post-title {
-            font-size: 1.5rem;
-            color: #2c3e50;
+        .form-group label {
+            display: block;
             margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .post-list {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .post-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e1e5e9;
+            transition: background-color 0.3s ease;
+        }
+        
+        .post-item:last-child {
+            border-bottom: none;
+        }
+        
+        .post-item:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .post-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
         }
         
         .post-meta {
             color: #7f8c8d;
             font-size: 0.9rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
         
         .post-content {
+            margin-top: 0.5rem;
             color: #555;
-            line-height: 1.8;
+            line-height: 1.7;
         }
         
-        .post-content p {
-            margin-bottom: 1rem;
+        .post-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            background: #ecf0f1;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: #bdc3c7;
         }
         
         .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        
-        .widget {
             background: white;
             border-radius: 10px;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .widget {
+            margin-bottom: 2rem;
         }
         
         .widget h3 {
@@ -110,191 +208,387 @@
             border-bottom: 2px solid #ecf0f1;
         }
         
-        .categories ul, .tags ul {
-            list-style: none;
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
         
-        .categories li, .tags li {
-            margin-bottom: 0.5rem;
+        .tag {
+            background: #ecf0f1;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
         
-        .categories a, .tags a {
-            color: #667eea;
-            text-decoration: none;
-            transition: color 0.3s ease;
+        .tag:hover {
+            background: #bdc3c7;
         }
         
-        .categories a:hover, .tags a:hover {
-            color: #764ba2;
-        }
-        
-        .recent-posts ul {
-            list-style: none;
-        }
-        
-        .recent-posts li {
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
+        .recent-posts .post-preview {
+            padding: 0.5rem 0;
             border-bottom: 1px solid #ecf0f1;
         }
         
-        .recent-posts li:last-child {
+        .recent-posts .post-preview:last-child {
             border-bottom: none;
         }
         
-        .recent-posts a {
-            color: #2c3e50;
-            text-decoration: none;
-            transition: color 0.3s ease;
+        .search-box {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 5px;
+            font-size: 1rem;
         }
         
-        .recent-posts a:hover {
-            color: #667eea;
-        }
-        
-        footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 2rem 0;
+        .comments-section {
             margin-top: 2rem;
         }
         
-        .social-links {
-            margin: 1rem 0;
+        .comment {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
         }
         
-        .social-links a {
+        .comment-author {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .comment-date {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+        
+        .page-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .page-btn:hover, .page-btn.active {
+            background: #667eea;
             color: white;
-            margin: 0 0.5rem;
-            text-decoration: none;
-            transition: color 0.3s ease;
+            border-color: #667eea;
         }
         
-        .social-links a:hover {
-            color: #667eea;
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            color: #7f8c8d;
+            border-top: 1px solid #ecf0f1;
         }
         
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .header-content h1 {
-                font-size: 2rem;
-            }
+        .login-section {
+            max-width: 400px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .user-info {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .like-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .like-btn:hover {
+            background: #c0392b;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <h1>我的技术博客</h1>
-                <p>分享编程经验、技术心得和生活感悟</p>
-            </div>
-        </div>
-    </header>
-
     <div class="container">
-        <div class="main-content">
-            <div class="blog-posts">
-                <article class="post">
-                    <div class="post-header">
-                        <h2 class="post-title">前端开发趋势展望：2024年值得关注的技术</h2>
-                        <div class="post-meta">发布于 2024年1月15日 | 作者：开发者小王</div>
-                    </div>
-                    <div class="post-content">
-                        <p>随着Web技术的不断发展，前端开发领域也在快速演进。2024年，我们看到了许多令人兴奋的趋势和技术革新。</p>
-                        <p>首先，TypeScript已经成为现代前端开发的标准配置。它的静态类型检查特性大大提高了代码的可维护性和开发效率。越来越多的大型项目开始全面拥抱TypeScript。</p>
-                        <p>其次，WebAssembly(WASM)正在改变我们对Web应用性能的认知。通过WASM，我们可以将C++、Rust等语言编译成Web原生支持的格式，实现接近原生应用的性能表现。</p>
-                        <p>最后，AI辅助开发工具正在成为开发者的新宠。从智能代码补全到自动化测试生成，AI正在逐步改变我们的开发方式。</p>
-                    </div>
-                </article>
-
-                <article class="post">
-                    <div class="post-header">
-                        <h2 class="post-title">React Hooks最佳实践指南</h2>
-                        <div class="post-meta">发布于 2024年1月10日 | 作者：开发者小王</div>
-                    </div>
-                    <div class="post-content">
-                        <p>React Hooks自发布以来，彻底改变了我们编写React组件的方式。它们让我们能够在函数组件中使用状态和其他React特性，而无需编写类组件。</p>
-                        <p><strong>useState和useEffect：</strong>这是最常用的两个Hooks。useState用于管理组件的状态，useEffect用于处理副作用，如数据获取、订阅或手动更改DOM。</p>
-                        <p><strong>自定义Hooks：</strong>当需要在多个组件之间共享状态逻辑时，自定义Hooks是完美的解决方案。它们让你能够提取组件逻辑到可重用的函数中。</p>
-                        <p><strong>性能优化：</strong>useMemo和useCallback可以帮助我们优化组件性能，避免不必要的重新渲染。但要谨慎使用，因为过度优化有时会增加代码复杂度。</p>
-                    </div>
-                </article>
-
-                <article class="post">
-                    <div class="post-header">
-                        <h2 class="post-title">JavaScript异步编程完全指南</h2>
-                        <div class="post-meta">发布于 2024年1月5日 | 作者：开发者小王</div>
-                    </div>
-                    <div class="post-content">
-                        <p>JavaScript的异步编程是每个前端开发者必须掌握的核心技能。从早期的回调函数到现代的async/await，异步编程经历了巨大的发展。</p>
-                        <p><strong>Promise：</strong>Promise对象代表一个异步操作的最终完成或失败，它有三种状态：pending（进行中）、fulfilled（已完成）和rejected（已失败）。</p>
-                        <p><strong>async/await：</strong>这是ES2017引入的语法糖，让异步代码看起来像同步代码一样简洁易读。async函数总是返回一个Promise对象。</p>
-                        <p><strong>错误处理：</strong>在异步操作中，正确的错误处理至关重要。使用try/catch块可以优雅地处理async/await中的错误。</p>
-                    </div>
-                </article>
+        <header>
+            <div class="header-content">
+                <h1>个人博客</h1>
+                <p>分享知识，记录生活</p>
             </div>
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="showSection('home')">首页</button>
+                <button class="tab-btn" onclick="showSection('write')">写文章</button>
+                <button class="tab-btn" onclick="showSection('about')">关于</button>
+                <button class="tab-btn" onclick="showSection('contact')">联系</button>
+            </div>
+        </header>
 
+        <div class="main-content">
+            <!-- 首页 -->
+            <section id="home" class="blog-section active">
+                <div class="post-list">
+                    <div class="post-item">
+                        <h3 class="post-title">如何学习前端开发</h3>
+                        <div class="post-meta">作者: 张三 | 发布时间: 2024-01-15 | 标签: 前端, JavaScript</div>
+                        <div class="post-content">
+                            <p>前端开发是一个快速发展的领域，掌握HTML、CSS和JavaScript是基础...</p>
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="viewPost(1)">阅读全文</button>
+                            <button class="like-btn" onclick="toggleLike(this)">❤️ 5</button>
+                            <span class="comment-count">评论: 3</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-item">
+                        <h3 class="post-title">React最佳实践</h3>
+                        <div class="post-meta">作者: 李四 | 发布时间: 2024-01-14 | 标签: React, 组件</div>
+                        <div class="post-content">
+                            <p>React是一个强大的前端框架，本文将介绍一些实用的最佳实践...</p>
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="viewPost(2)">阅读全文</button>
+                            <button class="like-btn" onclick="toggleLike(this)">❤️ 12</button>
+                            <span class="comment-count">评论: 7</span>
+                        </div>
+                    </div>
+                    
+                    <div class="post-item">
+                        <h3 class="post-title">Node.js入门教程</h3>
+                        <div class="post-meta">作者: 王五 | 发布时间: 2024-01-13 | 标签: Node.js, 后端</div>
+                        <div class="post-content">
+                            <p>Node.js让JavaScript可以在服务器端运行，本文将带你入门...</p>
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn" onclick="viewPost(3)">阅读全文</button>
+                            <button class="like-btn" onclick="toggleLike(this)">❤️ 8</button>
+                            <span class="comment-count">评论: 5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pagination">
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <button class="page-btn">下一页</button>
+                </div>
+            </section>
+
+            <!-- 写文章 -->
+            <section id="write" class="blog-section">
+                <div class="post-form">
+                    <h2>撰写新文章</h2>
+                    <div class="form-group">
+                        <label for="post-title">标题</label>
+                        <input type="text" id="post-title" placeholder="请输入文章标题">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-tags">标签（用逗号分隔）</label>
+                        <input type="text" id="post-tags" placeholder="前端, JavaScript, React">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-content">内容</label>
+                        <textarea id="post-content" rows="10" placeholder="开始写作..."></textarea>
+                    </div>
+                    <button class="btn" onclick="submitPost()">发布文章</button>
+                </div>
+            </section>
+
+            <!-- 关于 -->
+            <section id="about" class="blog-section">
+                <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h2>关于我</h2>
+                    <p>欢迎来到我的博客！我是张三，一名热爱编程的开发者。</p>
+                    <p>在这里我会分享各种技术文章，包括前端开发、后端技术、设计模式等内容。</p>
+                    <p>希望我的文章能对你有所帮助，也欢迎留言交流！</p>
+                </div>
+            </section>
+
+            <!-- 联系 -->
+            <section id="contact" class="blog-section">
+                <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h2>联系方式</h2>
+                    <p>邮箱: example@email.com</p>
+                    <p>微信: wechat_id</p>
+                    <p>GitHub: github.com/username</p>
+                </div>
+            </section>
+
+            <!-- 侧边栏 -->
             <aside class="sidebar">
-                <div class="widget about">
-                    <h3>关于博主</h3>
-                    <p>一名热爱技术的前端工程师，专注于React、Vue.js和现代Web开发技术。喜欢分享知识，乐于助人。</p>
+                <div class="widget">
+                    <h3>搜索</h3>
+                    <input type="text" class="search-box" placeholder="搜索文章...">
                 </div>
-
-                <div class="widget categories">
-                    <h3>分类</h3>
-                    <ul>
-                        <li><a href="#">前端开发 (15)</a></li>
-                        <li><a href="#">后端开发 (8)</a></li>
-                        <li><a href="#">JavaScript (12)</a></li>
-                        <li><a href="#">React (10)</a></li>
-                        <li><a href="#">CSS (6)</a></li>
-                    </ul>
-                </div>
-
-                <div class="widget recent-posts">
-                    <h3>最新文章</h3>
-                    <ul>
-                        <li><a href="#">前端开发趋势展望：2024年值得关注的技术</a></li>
-                        <li><a href="#">React Hooks最佳实践指南</a></li>
-                        <li><a href="#">JavaScript异步编程完全指南</a></li>
-                        <li><a href="#">Node.js性能优化技巧</a></li>
-                        <li><a href="#">Vue 3新特性详解</a></li>
-                    </ul>
-                </div>
-
-                <div class="widget tags">
+                
+                <div class="widget">
                     <h3>标签云</h3>
-                    <ul>
-                        <li><a href="#">#JavaScript</a></li>
-                        <li><a href="#">#React</a></li>
-                        <li><a href="#">#Vue.js</a></li>
-                        <li><a href="#">#Node.js</a></li>
-                        <li><a href="#">#CSS</a></li>
-                        <li><a href="#">#TypeScript</a></li>
-                        <li><a href="#">#Web开发</a></li>
-                        <li><a href="#">#性能优化</a></li>
-                    </ul>
+                    <div class="tag-cloud">
+                        <span class="tag">前端</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">React</span>
+                        <span class="tag">Node.js</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">HTML</span>
+                        <span class="tag">Vue</span>
+                        <span class="tag">Python</span>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <h3>最新文章</h3>
+                    <div class="recent-posts">
+                        <div class="post-preview">
+                            <a href="#" onclick="viewPost(1)">如何学习前端开发</a>
+                            <div class="post-meta">2024-01-15</div>
+                        </div>
+                        <div class="post-preview">
+                            <a href="#" onclick="viewPost(2)">React最佳实践</a>
+                            <div class="post-meta">2024-01-14</div>
+                        </div>
+                        <div class="post-preview">
+                            <a href="#" onclick="viewPost(3)">Node.js入门教程</a>
+                            <div class="post-meta">2024-01-13</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <h3>用户信息</h3>
+                    <div class="user-info">
+                        <p><strong>用户名:</strong> 游客</p>
+                        <p><strong>角色:</strong> 访客</p>
+                        <button class="btn" style="margin-top: 0.5rem;" onclick="toggleLogin()">登录</button>
+                    </div>
                 </div>
             </aside>
         </div>
+
+        <footer>
+            <p>&copy; 2024 个人博客系统. 版权所有.</p>
+        </footer>
     </div>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 我的技术博客. 版权所有.</p>
-            <div class="social-links">
-                <a href="#" title="GitHub">GitHub</a>
-                <a href="#" title="Twitter">Twitter</a>
-                <a href="#" title="LinkedIn">LinkedIn</a>
-                <a href="#" title="Email">Email</a>
-            </div>
-            <p>技术改变世界，代码创造未来</p>
-        </div>
-    </footer>
+    <script>
+        // 切换页面
+        function showSection(sectionId) {
+            // 隐藏所有section
+            document.querySelectorAll('.blog-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // 显示当前section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // 更新导航按钮状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // 查看文章详情
+        function viewPost(postId) {
+            alert(`正在查看文章 ${postId} 的详细内容`);
+            // 这里可以跳转到文章详情页或弹出模态框显示内容
+        }
+
+        // 点赞功能
+        function toggleLike(button) {
+            const currentText = button.textContent;
+            const match = currentText.match(/(\d+)/);
+            if (match) {
+                const count = parseInt(match[1]);
+                button.textContent = `❤️ ${count + 1}`;
+            } else {
+                button.textContent = `❤️ 1`;
+            }
+        }
+
+        // 提交文章
+        function submitPost() {
+            const title = document.getElementById('post-title').value;
+            const content = document.getElementById('post-content').value;
+            const tags = document.getElementById('post-tags').value;
+
+            if (!title || !content) {
+                alert('请填写标题和内容！');
+                return;
+            }
+
+            // 这里可以添加实际的文章提交逻辑
+            alert('文章发布成功！');
+            
+            // 清空表单
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-content').value = '';
+            document.getElementById('post-tags').value = '';
+        }
+
+        // 登录切换
+        function toggleLogin() {
+            const userInfo = document.querySelector('.user-info');
+            if (userInfo.innerHTML.includes('游客')) {
+                userInfo.innerHTML = `
+                    <p><strong>用户名:</strong> 张三</p>
+                    <p><strong>角色:</strong> 作者</p>
+                    <button class="btn" style="margin-top: 0.5rem;" onclick="logout()">退出</button>
+                `;
+            } else {
+                userInfo.innerHTML = `
+                    <p><strong>用户名:</strong> 游客</p>
+                    <p><strong>角色:</strong> 访客</p>
+                    <button class="btn" style="margin-top: 0.5rem;" onclick="toggleLogin()">登录</button>
+                `;
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            toggleLogin();
+        }
+
+        // 标签点击事件
+        document.querySelectorAll('.tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                alert(`正在搜索标签 "${this.textContent}" 相关的文章`);
+            });
+        });
+
+        // 搜索功能
+        document.querySelector('.search-box').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                alert(`正在搜索: ${this.value}`);
+            }
+        });
+
+        // 分页按钮事件
+        document.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.page-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>
