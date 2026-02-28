@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>余华 | 专业导师详情 | Inkwell 创意写作平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#1A2456',      // 深蓝灰
+                        parchment: '#F5F2E9', // 米白
+                        sand: '#E8DCCA',     // 浅棕
+                        mahogany: '#5D4037', // 深棕
+                        accent: '#B71C1C',   // 暗红强调
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .typing-cursor {
+                border-right: 2px solid currentColor;
+                animation: cursor-blink 1.2s infinite;
+            }
+            .ink-splash {
+                position: relative;
+                overflow: hidden;
+            }
+            .ink-splash::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 Q25,50 50,25 T100,50 L100,100 L0,100 Z" fill="rgba(26, 36, 86, 0.03)" /></svg>');
+                background-size: 100% 100%;
+                opacity: 0.5;
+                z-index: -1;
+            }
+            .paper-float {
+                transform: translateY(0);
+                transition: transform 0.5s ease-in-out;
+            }
+            .paper-float:hover {
+                transform: translateY(-5px) rotate(1deg);
+            }
+            .card-shadow {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            }
+            .card-shadow-hover {
+                transition: all 0.3s ease;
+            }
+            .card-shadow-hover:hover {
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                transform: translateY(-2px);
+            }
+            .book-card {
+                transition: all 0.3s ease;
+            }
+            .book-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            }
+            .timeline-item {
+                position: relative;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 8px;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background-color: theme('colors.accent');
+                z-index: 1;
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: 5px;
+                top: 24px;
+                width: 2px;
+                height: calc(100% + 24px);
+                background-color: theme('colors.sand');
+            }
+            .timeline-item:last-child::after {
+                display: none;
+            }
+        }
+        
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-parchment text-ink font-sans">
+    <!-- 导航栏 -->
+    <header class="fixed w-full bg-parchment/90 backdrop-blur-sm z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <div class="flex items-center">
+                    <a href="../index.html" class="flex items-center">
+                        <span class="text-ink font-serif font-bold text-2xl md:text-3xl">Inkwell</span>
+                    </a>
+                </div>
+                
+                <!-- 桌面导航 -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="../index.html#courses" class="text-ink hover:text-accent transition-colors duration-300 font-medium">课程</a>
+                    <a href="index.html" class="text-accent font-medium">导师</a>
+                    <a href="../index.html#writing-plan" class="text-ink hover:text-accent transition-colors duration-300 font-medium">写作计划</a>
+                    <a href="../index.html#community" class="text-ink hover:text-accent transition-colors duration-300 font-medium">社区</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="../auth/login.html" class="hidden md:block text-ink hover:text-accent transition-colors duration-300 font-medium">登录</a>
+                    <a href="../auth/register.html" class="hidden md:block bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300">注册</a>
+                    
+                    <!-- 移动端菜单按钮 -->
+                    <button type="button" id="mobile-menu-button" class="md:hidden text-ink focus:outline-none">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-parchment border-t border-sand/30">
+            <div class="px-4 py-3 space-y-3">
+                <a href="../index.html#courses" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">课程</a>
+                <a href="index.html" class="block text-accent font-medium">导师</a>
+                <a href="../index.html#writing-plan" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">写作计划</a>
+                <a href="../index.html#community" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">社区</a>
+                <div class="flex space-x-4 pt-2">
+                    <a href="../auth/login.html" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">登录</a>
+                    <a href="../auth/register.html" class="block bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300">注册</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 导师详情 -->
+    <section class="pt-32 pb-12 md:pt-40 md:pb-16 relative overflow-hidden ink-splash">
+        <div class="absolute inset-0 bg-ink/5 -z-10"></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- 左侧：导师照片和基本信息 -->
+                <div class="lg:w-1/3">
+                    <div class="bg-white rounded-lg overflow-hidden shadow-lg card-shadow sticky top-24">
+                        <div class="relative">
+                            <img src="https://picsum.photos/id/1005/600/800" alt="余华老师" class="w-full h-80 object-cover object-center">
+                            <div class="absolute inset-0 bg-gradient-to-t from-ink/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <h1 class="text-2xl md:text-3xl font-serif font-bold">余华</h1>
+                                <p class="text-white/80">当代著名作家</p>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h2 class="text-lg font-medium text-ink mb-3">基本信息</h2>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-calendar mt-1 mr-3 text-ink/50"></i>
+                                        <span class="text-ink/80">1960年4月3日</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-map-marker mt-1 mr-3 text-ink/50"></i>
+                                        <span class="text-ink/80">浙江杭州</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-graduation-cap mt-1 mr-3 text-ink/50"></i>
+                                        <span class="text-ink/80">北京鲁迅文学院</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-award mt-1 mr-3 text-ink/50"></i>
+                                        <span class="text-ink/80">意大利格林扎纳·卡佛文学奖、法国文学和艺术骑士勋章等</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h2 class="text-lg font-medium text-ink mb-3">专业领域</h2>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">小说创作</span>
+                                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">文学理论</span>
+                                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">写作技巧</span>
+                                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">现代文学</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h2 class="text-lg font-medium text-ink mb-3">教学风格</h2>
+                                <p class="text-ink/80">
+                                    余华的教学风格深入浅出，注重培养学生的观察力和表达能力，善于引导学生从日常生活中发现写作素材，并通过具体的写作练习帮助学生掌握写作技巧。
+                                </p>
+                            </div>
+                            
+                            <div class="flex space-x-3">
+                                <a href="#" class="flex-1 bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300 text-center">
+                                    <i class="fa fa-paper-plane mr-2"></i> 联系导师
+                                </a>
+                                <a href="#" class="flex-1 border border-ink text-ink hover:bg-ink/5 px-4 py-2 rounded-md transition-colors duration-300 text-center">
+                                    <i class="fa fa-book mr-2"></i> 查看课程
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧：导师详细介绍 -->
+                <div class="lg:w-2/3">
+                    <!-- 个人简介 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8 mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-4">个人简介</h2>
+                        <div class="prose prose-ink max-w-none">
+                            <p class="text-ink/80 mb-4">
+                                余华，1960年4月3日出生于浙江杭州，中国当代作家，中国作家协会委员会委员。1977年中学毕业后，曾在海盐县文化馆和嘉兴市文联工作。1983年开始发表小说，1984年考入北京鲁迅文学院研究生班。
+                            </p>
+                            <p class="text-ink/80 mb-4">
+                                余华的早期作品以冷漠、暴力和死亡为主题，风格独特，语言简洁有力。代表作品有《活着》《许三观卖血记》《在细雨中呼喊》《兄弟》等。他的作品被翻译成多国文字，在国际上享有盛誉。
+                            </p>
+                            <p class="text-ink/80">
+                                余华的创作风格经历了从先锋派到现实主义的转变，但始终保持着对人性的深刻探索和对社会现实的关注。他的作品既有强烈的艺术感染力，又有深刻的思想内涵，是中国当代文学的重要代表。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 代表作品 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8 mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">代表作品</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 作品1 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/24/300/400" alt="活着" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">活着</h3>
+                                        <p class="text-sm text-ink/60 mb-2">1992年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了农村人福贵悲惨的人生遭遇。福贵本是个阔少爷，可他嗜赌如命，终于赌光了家业，一贫如洗。他的父亲被他活活气死，母亲则在穷困中患了重病，福贵前去求药，却在途中被国民党抓去当壮丁，后被解放军俘虏，回到家中才知道母亲早已去世...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品2 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/20/300/400" alt="许三观卖血记" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">许三观卖血记</h3>
+                                        <p class="text-sm text-ink/60 mb-2">1995年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了许三观靠着卖血度过了人生的一个个难关，战胜了命运强加给他的惊涛骇浪，而当他老了，知道自己的血再也没有人要时，精神却崩溃了。它以博大的温情描绘了磨难中的人生，以激烈的故事形式表达了人在面对厄运时求生的欲望...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品3 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/21/300/400" alt="在细雨中呼喊" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">在细雨中呼喊</h3>
+                                        <p class="text-sm text-ink/60 mb-2">1993年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            是余华的第一部长篇小说，讲述了一个男孩孙光林从童年到青年的成长经历。小说以孙光林的视角，通过回忆的方式，展现了他在童年时期所经历的家庭变故、友情、爱情等一系列事件...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品4 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/22/300/400" alt="兄弟" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">兄弟</h3>
+                                        <p class="text-sm text-ink/60 mb-2">2005年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了李光头和宋钢这对异父异母兄弟的故事。李光头和宋钢在特殊的历史时期相依为命，共同成长。改革开放后，两人的命运发生了巨大变化，李光头成为了成功的企业家，而宋钢则在时代的变迁中逐渐迷失...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品5 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/23/300/400" alt="第七天" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">第七天</h3>
+                                        <p class="text-sm text-ink/60 mb-2">2013年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了一个普通人杨飞在死后的七天里，回顾自己的一生，并在另一个世界里遇到了各种人物和事件。小说以独特的视角，探讨了生命、死亡、爱情、亲情等主题...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品6 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/25/300/400" alt="世事如烟" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">世事如烟</h3>
+                                        <p class="text-sm text-ink/60 mb-2">1988年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            是余华的中短篇小说集，收录了他早期的代表作品。这些作品以冷漠、暴力和死亡为主题，风格独特，语言简洁有力，展现了余华作为先锋派作家的创作特色...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 创作历程 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8 mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">创作历程</h2>
+                        
+                        <div class="pl-6 space-y-8">
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">1960-1979：早年经历</h3>
+                                <p class="text-ink/80">
+                                    1960年4月3日，余华出生于浙江杭州，后随父母迁至海盐县。父亲是医生，母亲是护士。1977年中学毕业后，余华曾在海盐县文化馆和嘉兴市文联工作。
+                                </p>
+                            </div>
+                            
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">1980-1989：创作初期</h3>
+                                <p class="text-ink/80">
+                                    1983年，余华开始发表小说。1984年，考入北京鲁迅文学院研究生班。这一时期，他创作了《十八岁出门远行》《西北风呼啸的中午》等短篇小说，以独特的先锋派风格引起文坛关注。
+                                </p>
+                            </div>
+                            
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">1990-1999：创作成熟期</h3>
+                                <p class="text-ink/80">
+                                    1992年，出版长篇小说《活着》，这部作品标志着余华创作风格的转变，从先锋派转向现实主义。1993年，出版长篇小说《在细雨中呼喊》。1995年，出版长篇小说《许三观卖血记》，这三部作品成为余华的代表作。
+                                </p>
+                            </div>
+                            
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">2000-2009：创作拓展期</h3>
+                                <p class="text-ink/80">
+                                    2005年，出版长篇小说《兄弟》上部，2006年出版下部。这部作品以中国改革开放前后的社会变迁为背景，讲述了一对兄弟的命运故事，引起广泛讨论。
+                                </p>
+                            </div>
+                            
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">2010至今：创作新探索</h3>
+                                <p class="text-ink/80">
+                                    2013年，出版长篇小说《第七天》，这部作品以独特的视角探讨了生命和死亡的主题。近年来，余华还创作了多部随笔和评论，如《我能否相信自己》《文学或者音乐》等。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 写作理念 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8 mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">写作理念</h2>
+                        
+                        <div class="space-y-6">
+                            <div class="bg-parchment/50 rounded-lg p-4">
+                                <blockquote class="text-ink font-serif italic text-lg">
+                                    "写作是一种寻找，寻找那些我们在日常生活中已经失去的东西。"
+                                </blockquote>
+                            </div>
+                            
+                            <p class="text-ink/80">
+                                余华认为，写作是一种对生活的观察和思考，是一种对人性的探索。他强调，作家应该保持对生活的敏感和好奇心，善于从日常生活中发现写作素材。
+                            </p>
+                            
+                            <p class="text-ink/80">
+                                在创作方法上，余华注重细节的描写和人物内心世界的挖掘。他认为，好的小说应该能够让读者感受到人物的呼吸和心跳，能够让读者走进人物的内心世界。
+                            </p>
+                            
+                            <p class="text-ink/80">
+                                余华还强调，写作是一种技能，需要不断地练习和提高。他建议年轻作家要多读书，多观察生活，多写作，通过不断地实践来提高自己的写作水平。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 学生评价 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">学生评价</h2>
+                        
+                        <div class="space-y-6">
+                            <!-- 评价1 -->
+                            <div class="border-b border-sand/30 pb-6">
+                                <div class="flex items-center mb-3">
+                                    <img src="https://picsum.photos/id/64/100/100" alt="学生头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h3 class="font-medium text-ink">张明</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-ink/80">
+                                    余华老师的课让我受益匪浅。他不仅教给我们写作的技巧，更重要的是教给我们如何观察生活，如何思考人生。他的指导让我的写作水平有了很大的提高。
+                                </p>
+                            </div>
+                            
+                            <!-- 评价2 -->
+                            <div class="border-b border-sand/30 pb-6">
+                                <div class="flex items-center mb-3">
+                                    <img src="https://picsum.photos/id/65/100/100" alt="学生头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h3 class="font-medium text-ink">李华</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star-half-o"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-ink/80">
+                                    余华老师是一位非常有耐心的老师，他会认真阅读每一位学生的作品，并给出详细的修改意见。他的课既有理论指导，又有实践练习，非常实用。
+                                </p>
+                            </div>
+                            
+                            <!-- 评价3 -->
+                            <div>
+                                <div class="flex items-center mb-3">
+                                    <img src="https://picsum.photos/id/66/100/100" alt="学生头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h3 class="font-medium text-ink">王芳</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-ink/80">
+                                    余华老师的课充满了智慧和启发。他通过分析经典作品和自己的创作经验，让我们了解了小说创作的精髓。他的教学方法生动有趣，让我对写作产生了更大的热情。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 订阅区域 -->
+    <section class="py-16 md:py-24 bg-ink text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=" http:="" www.w3.org="" 2000="" svg"="" viewbox="0 0 100 100" preserveaspectratio="none"><path d="M0,0 Q25,50 50,25 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.05)">')] opacity-30"&gt;</path></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-serif font-bold mb-6">获取写作灵感与独家资源</h2>
+                <p class="text-lg text-white/80 mb-8">
+                    订阅我们的写作通讯，每周获取写作技巧、灵感提示和独家优惠，助你成为更优秀的写作者。
+                </p>
+                
+                <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                    <input type="email" placeholder="输入你的邮箱地址" class="flex-1 px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-accent">
+                    <button type="submit" class="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-md transition-all duration-300 font-medium whitespace-nowrap">
+                        立即订阅
+                    </button>
+                </form>
+                
+                <p class="text-sm text-white/60 mt-4">
+                    我们尊重你的隐私，绝不会分享你的个人信息。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-ink text-white pt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6">Inkwell</h3>
+                    <p class="text-white/70 mb-6">
+                        为年轻写作者和自由职业者打造的创意写作在线学习平台，提供专业课程、个性化指导和社区支持。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-wechat text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="../index.html" class="text-white/70 hover:text-white transition-colors duration-300">首页</a></li>
+                        <li><a href="../index.html#courses" class="text-white/70 hover:text-white transition-colors duration-300">课程</a></li>
+                        <li><a href="index.html" class="text-white/70 hover:text-white transition-colors duration-300">导师</a></li>
+                        <li><a href="../index.html#writing-plan" class="text-white/70 hover:text-white transition-colors duration-300">写作计划</a></li>
+                        <li><a href="../index.html#community" class="text-white/70 hover:text-white transition-colors duration-300">社区</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">资源中心</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">写作技巧</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">写作素材</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">出版指南</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">自由职业资源</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">常见问题</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">联系我们</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">北京市朝阳区创意园B座501</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">contact@inkwell.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">+86 10 8888 7777</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-white/50 text-sm mb-4 md:mb-0">
+                        © 2025 Inkwell 创意写作平台. 保留所有权利.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">隐私政策</a>
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">服务条款</a>
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">Cookie 政策</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.add('bg-parchment/95');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.remove('bg-parchment/95');
+            }
+        });
+    </script>
+</body>
+</html>

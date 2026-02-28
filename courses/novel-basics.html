@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小说创作入门：从构思到完稿 | Inkwell 创意写作平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#1A2456',      // 深蓝灰
+                        parchment: '#F5F2E9', // 米白
+                        sand: '#E8DCCA',     // 浅棕
+                        mahogany: '#5D4037', // 深棕
+                        accent: '#B71C1C',   // 暗红强调
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .typing-cursor {
+                border-right: 2px solid currentColor;
+                animation: cursor-blink 1.2s infinite;
+            }
+            .ink-splash {
+                position: relative;
+                overflow: hidden;
+            }
+            .ink-splash::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 Q25,50 50,25 T100,50 L100,100 L0,100 Z" fill="rgba(26, 36, 86, 0.03)" /></svg>');
+                background-size: 100% 100%;
+                opacity: 0.5;
+                z-index: -1;
+            }
+            .paper-float {
+                transform: translateY(0);
+                transition: transform 0.5s ease-in-out;
+            }
+            .paper-float:hover {
+                transform: translateY(-5px) rotate(1deg);
+            }
+            .card-shadow {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            }
+            .card-shadow-hover {
+                transition: all 0.3s ease;
+            }
+            .card-shadow-hover:hover {
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                transform: translateY(-2px);
+            }
+            .module-card {
+                transition: all 0.3s ease;
+            }
+            .module-card:hover {
+                transform: translateX(5px);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+            .progress-bar {
+                background: linear-gradient(90deg, theme('colors.accent') 0%, theme('colors.ink') 100%);
+            }
+        }
+        
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-parchment text-ink font-sans">
+    <!-- 导航栏 -->
+    <header class="fixed w-full bg-parchment/90 backdrop-blur-sm z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <div class="flex items-center">
+                    <a href="../index.html" class="flex items-center">
+                        <span class="text-ink font-serif font-bold text-2xl md:text-3xl">Inkwell</span>
+                    </a>
+                </div>
+                
+                <!-- 桌面导航 -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-accent font-medium">课程</a>
+                    <a href="../mentors/index.html" class="text-ink hover:text-accent transition-colors duration-300 font-medium">导师</a>
+                    <a href="../index.html#writing-plan" class="text-ink hover:text-accent transition-colors duration-300 font-medium">写作计划</a>
+                    <a href="../index.html#community" class="text-ink hover:text-accent transition-colors duration-300 font-medium">社区</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="../auth/login.html" class="hidden md:block text-ink hover:text-accent transition-colors duration-300 font-medium">登录</a>
+                    <a href="../auth/register.html" class="hidden md:block bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300">注册</a>
+                    
+                    <!-- 移动端菜单按钮 -->
+                    <button type="button" id="mobile-menu-button" class="md:hidden text-ink focus:outline-none">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-parchment border-t border-sand/30">
+            <div class="px-4 py-3 space-y-3">
+                <a href="index.html" class="block text-accent font-medium">课程</a>
+                <a href="../mentors/index.html" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">导师</a>
+                <a href="../index.html#writing-plan" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">写作计划</a>
+                <a href="../index.html#community" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">社区</a>
+                <div class="flex space-x-4 pt-2">
+                    <a href="../auth/login.html" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">登录</a>
+                    <a href="../auth/register.html" class="block bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300">注册</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 课程头部 -->
+    <section class="pt-32 pb-12 md:pt-40 md:pb-16 relative overflow-hidden ink-splash">
+        <div class="absolute inset-0 bg-ink/5 -z-10"></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- 左侧：课程信息 -->
+                <div class="lg:w-2/3">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">小说</span>
+                        <span class="px-3 py-1 bg-accent/10 text-accent rounded-full text-sm">畅销课程</span>
+                        <span class="px-3 py-1 bg-ink/10 text-ink rounded-full text-sm">入门级</span>
+                    </div>
+                    
+                    <h1 class="text-[clamp(2rem,4vw,3rem)] font-serif font-bold leading-tight text-ink mb-4">
+                        小说创作入门：从构思到完稿
+                    </h1>
+                    
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="flex items-center text-yellow-500">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <span class="text-ink font-medium ml-2">4.9 (2,345 评分)</span>
+                        </div>
+                        <span class="text-ink/60">|</span>
+                        <span class="text-ink/80">12,567 人已报名</span>
+                    </div>
+                    
+                    <p class="text-lg text-ink/80 mb-6">
+                        本课程将带你了解小说创作的基本要素，包括人物塑造、情节设计、场景描写等，帮助你完成一部短篇小说。无论你是初学者还是有一定写作经验的写作者，都能从本课程中获益。
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-4 mb-8">
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-clock-o text-ink/50"></i>
+                            <span class="text-ink/80">课程时长：8周</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-file-text-o text-ink/50"></i>
+                            <span class="text-ink/80">24 节课</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-signal text-ink/50"></i>
+                            <span class="text-ink/80">难度：入门级</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-calendar text-ink/50"></i>
+                            <span class="text-ink/80">随到随学</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <img src="https://picsum.photos/id/1005/100/100" alt="余华老师" class="w-10 h-10 rounded-full">
+                        <div>
+                            <p class="text-ink font-medium">余华 导师</p>
+                            <p class="text-ink/60 text-sm">当代著名作家</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧：课程封面和购买 -->
+                <div class="lg:w-1/3">
+                    <div class="bg-white rounded-lg overflow-hidden shadow-lg card-shadow sticky top-24">
+                        <img src="https://picsum.photos/id/42/600/400" alt="小说创作入门" class="w-full h-48 object-cover object-center">
+                        
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <div class="flex items-end gap-3 mb-2">
+                                    <span class="text-accent font-bold text-3xl">¥299</span>
+                                    <span class="text-ink/50 line-through text-lg">¥399</span>
+                                    <span class="bg-accent/10 text-accent text-sm px-2 py-1 rounded">限时优惠</span>
+                                </div>
+                                <p class="text-ink/60 text-sm">
+                                    包含所有课程内容、练习作业、导师点评和社区讨论
+                                </p>
+                            </div>
+                            
+                            <button class="w-full bg-accent hover:bg-accent/90 text-white px-6 py-4 rounded-md transition-all duration-300 font-medium text-lg mb-4">
+                                立即购买
+                            </button>
+                            
+                            <button class="w-full border border-ink text-ink hover:bg-ink/5 px-6 py-4 rounded-md transition-all duration-300 font-medium text-lg mb-6">
+                                免费试学
+                            </button>
+                            
+                            <div class="space-y-3 text-sm text-ink/70">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>24 节精品课程</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>12 个写作练习</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>导师作业点评（2次）</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>课程资料下载</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>终身学习权限</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>7天无理由退款</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 课程详情 -->
+    <section class="py-12 md:py-16 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- 左侧：课程内容 -->
+                <div class="lg:w-2/3">
+                    <!-- 课程简介 -->
+                    <div class="mb-12">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">课程简介</h2>
+                        <div class="prose prose-ink max-w-none">
+                            <p class="text-ink/80 mb-4">
+                                你是否曾经有过一个很棒的故事想法，却不知道如何将它写成一篇完整的小说？或者你已经开始写作，但总是在中途卡住，无法完成？本课程将帮助你解决这些问题。
+                            </p>
+                            <p class="text-ink/80 mb-4">
+                                在本课程中，余华老师将分享他多年的创作经验，带你了解小说创作的基本要素，包括：
+                            </p>
+                            <ul class="list-disc pl-6 mb-4 text-ink/80">
+                                <li>如何寻找和发展故事创意</li>
+                                <li>如何塑造生动的人物形象</li>
+                                <li>如何设计引人入胜的情节</li>
+                                <li>如何进行有效的场景描写</li>
+                                <li>如何运用对话推动故事发展</li>
+                                <li>如何修改和完善你的作品</li>
+                            </ul>
+                            <p class="text-ink/80">
+                                通过本课程的学习，你将能够完成一部短篇小说，并掌握小说创作的基本技巧，为你未来的创作打下坚实的基础。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 课程大纲 -->
+                    <div class="mb-12">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">课程大纲</h2>
+                        
+                        <div class="space-y-4">
+                            <!-- 模块1 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow module-card">
+                                <div class="p-4 cursor-pointer module-header" data-module="1">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                            <div>
+                                                <h3 class="text-lg font-medium text-ink">小说创作的基础</h3>
+                                                <p class="text-ink/60 text-sm">3 节课 · 45分钟</p>
+                                            </div>
+                                        </div>
+                                        <i class="fa fa-chevron-down text-ink/50 transition-transform duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="hidden p-4 border-t border-sand/30 module-content" id="module-1">
+                                    <ul class="space-y-2">
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-play-circle text-accent"></i>
+                                                <span class="text-ink/80">1.1 什么是小说？</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-play-circle text-accent"></i>
+                                                <span class="text-ink/80">1.2 小说的要素</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-file-text-o text-ink/50"></i>
+                                                <span class="text-ink/80">1.3 写作前的准备</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- 模块2 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow module-card">
+                                <div class="p-4 cursor-pointer module-header" data-module="2">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                            <div>
+                                                <h3 class="text-lg font-medium text-ink">寻找故事创意</h3>
+                                                <p class="text-ink/60 text-sm">4 节课 · 60分钟</p>
+                                            </div>
+                                        </div>
+                                        <i class="fa fa-chevron-down text-ink/50 transition-transform duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="hidden p-4 border-t border-sand/30 module-content" id="module-2">
+                                    <ul class="space-y-2">
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-play-circle text-accent"></i>
+                                                <span class="text-ink/80">2.1 创意的来源</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-play-circle text-accent"></i>
+                                                <span class="text-ink/80">2.2 如何发展创意</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-play-circle text-accent"></i>
+                                                <span class="text-ink/80">2.3 创意评估</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-file-text-o text-ink/50"></i>
+                                                <span class="text-ink/80">2.4 创意练习</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- 模块3 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow module-card">
+                                <div class="p-4 cursor-pointer module-header" data-module="3">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center font-bold">3</div>
+                                            <div>
+                                                <h3 class="text-lg font-medium text-ink">塑造人物形象</h3>
+                                                <p class="text-ink/60 text-sm">4 节课 · 60分钟</p>
+                                            </div>
+                                        </div>
+                                        <i class="fa fa-chevron-down text-ink/50 transition-transform duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="hidden p-4 border-t border-sand/30 module-content" id="module-3">
+                                    <ul class="space-y-2">
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-play-circle text-accent"></i>
+                                                <span class="text-ink/80">3.1 人物的重要性</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-play-circle text-accent"></i>
+                                                <span class="text-ink/80">3.2 人物的内外特征</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-play-circle text-accent"></i>
+                                                <span class="text-ink/80">3.3 人物关系</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                        <li class="flex justify-between items-center">
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa fa-file-text-o text-ink/50"></i>
+                                                <span class="text-ink/80">3.4 人物塑造练习</span>
+                                            </div>
+                                            <span class="text-ink/60 text-sm">15分钟</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- 更多模块... -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow module-card">
+                                <div class="p-4 cursor-pointer module-header" data-module="4">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center font-bold">4</div>
+                                            <div>
+                                                <h3 class="text-lg font-medium text-ink">设计情节</h3>
+                                                <p class="text-ink/60 text-sm">4 节课 · 60分钟</p>
+                                            </div>
+                                        </div>
+                                        <i class="fa fa-chevron-down text-ink/50 transition-transform duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="hidden p-4 border-t border-sand/30 module-content" id="module-4">
+                                    <!-- 内容将通过JS动态显示 -->
+                                </div>
+                            </div>
+                            
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow module-card">
+                                <div class="p-4 cursor-pointer module-header" data-module="5">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-ink text-white rounded-full flex items-center justify-center font-bold">5</div>
+                                            <div>
+                                                <h3 class="text-lg font-medium text-ink">场景描写</h3>
+                                                <p class="text-ink/60 text-sm">3 节课 · 45分钟</p>
+                                            </div>
+                                        </div>
+                                        <i class="fa fa-chevron-down text-ink/50 transition-transform duration-300"></i>
+                                    </div>
+                                </div>
+                                <div class="hidden p-4 border-t border-sand/30 module-content" id="module-5">
+                                    <!-- 内容将通过JS动态显示 -->
+                                </div>
+                            </div>
+                            
+                            <button class="w-full text-center text-ink hover:text-accent transition-colors duration-300 font-medium py-2">
+                                查看全部 24 节课 <i class="fa fa-arrow-down ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 导师介绍 -->
+                    <div class="mb-12">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">导师介绍</h2>
+                        
+                        <div class="flex flex-col sm:flex-row gap-6 bg-parchment rounded-lg p-6">
+                            <div class="sm:w-1/4">
+                                <img src="https://picsum.photos/id/1005/200/200" alt="余华老师" class="w-full h-40 object-cover object-center rounded-lg">
+                            </div>
+                            <div class="sm:w-3/4">
+                                <h3 class="text-xl font-serif font-bold text-ink mb-2">余华</h3>
+                                <p class="text-ink/80 mb-4">
+                                    当代著名作家，中国作家协会委员会委员。1960年4月3日出生于浙江杭州，1983年开始发表小说，1984年考入北京鲁迅文学院研究生班。
+                                </p>
+                                <p class="text-ink/80 mb-4">
+                                    余华的代表作品有《活着》《许三观卖血记》《在细雨中呼喊》《兄弟》等。他的作品被翻译成多国文字，在国际上享有盛誉。曾获意大利格林扎纳·卡佛文学奖、法国文学和艺术骑士勋章等多项荣誉。
+                                </p>
+                                <a href="../mentors/yu-hua.html" class="text-ink hover:text-accent transition-colors duration-300 font-medium flex items-center">
+                                    查看导师详情 <i class="fa fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 学员评价 -->
+                    <div>
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">学员评价</h2>
+                        
+                        <div class="space-y-6">
+                            <!-- 评价1 -->
+                            <div class="bg-parchment rounded-lg p-6">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <img src="https://picsum.photos/id/64/100/100" alt="学员头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-ink">张明</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <span class="text-ink/60 text-sm ml-auto">2025年1月15日</span>
+                                </div>
+                                <p class="text-ink/80">
+                                    余华老师的课非常棒！他讲解得很详细，从如何寻找创意到如何塑造人物，再到如何设计情节，都讲得很清楚。通过这门课，我终于完成了我的第一篇短篇小说，非常感谢余华老师的指导！
+                                </p>
+                            </div>
+                            
+                            <!-- 评价2 -->
+                            <div class="bg-parchment rounded-lg p-6">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <img src="https://picsum.photos/id/65/100/100" alt="学员头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-ink">李华</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star-half-o"></i>
+                                        </div>
+                                    </div>
+                                    <span class="text-ink/60 text-sm ml-auto">2025年1月10日</span>
+                                </div>
+                                <p class="text-ink/80">
+                                    作为一个写作新手，这门课对我帮助很大。余华老师的教学方法很生动，他会用自己的作品作为例子，详细讲解写作技巧。课程的练习也很有针对性，帮助我巩固了所学的知识。
+                                </p>
+                            </div>
+                            
+                            <!-- 评价3 -->
+                            <div class="bg-parchment rounded-lg p-6">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <img src="https://picsum.photos/id/66/100/100" alt="学员头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-ink">王芳</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                    </div>
+                                    <span class="text-ink/60 text-sm ml-auto">2025年1月5日</span>
+                                </div>
+                                <p class="text-ink/80">
+                                    余华老师是我非常喜欢的作家，他的课也和他的作品一样精彩。这门课不仅教给了我写作的技巧，更重要的是教给了我如何观察生活，如何思考人生。我相信这对我未来的写作会有很大的帮助。
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-8">
+                            <button class="px-6 py-3 border border-ink text-ink hover:bg-ink/5 rounded-md transition-all duration-300 font-medium">
+                                查看全部 2,345 条评价
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧：课程购买和信息 -->
+                <div class="lg:w-1/3">
+                    <div class="bg-white rounded-lg shadow-lg card-shadow sticky top-24">
+                        <div class="p-6 border-b border-sand/30">
+                            <div class="mb-6">
+                                <div class="flex items-end gap-3 mb-2">
+                                    <span class="text-accent font-bold text-3xl">¥299</span>
+                                    <span class="text-ink/50 line-through text-lg">¥399</span>
+                                    <span class="bg-accent/10 text-accent text-sm px-2 py-1 rounded">限时优惠</span>
+                                </div>
+                                <p class="text-ink/60 text-sm">
+                                    包含所有课程内容、练习作业、导师点评和社区讨论
+                                </p>
+                            </div>
+                            
+                            <button class="w-full bg-accent hover:bg-accent/90 text-white px-6 py-4 rounded-md transition-all duration-300 font-medium text-lg mb-4">
+                                立即购买
+                            </button>
+                            
+                            <button class="w-full border border-ink text-ink hover:bg-ink/5 px-6 py-4 rounded-md transition-all duration-300 font-medium text-lg mb-6">
+                                免费试学
+                            </button>
+                            
+                            <div class="space-y-3 text-sm text-ink/70">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>24 节精品课程</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>12 个写作练习</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>导师作业点评（2次）</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>课程资料下载</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>终身学习权限</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa fa-check-circle text-accent"></i>
+                                    <span>7天无理由退款</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6 border-b border-sand/30">
+                            <h3 class="text-lg font-medium text-ink mb-4">课程信息</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3">
+                                    <i class="fa fa-clock-o text-ink/50 mt-1"></i>
+                                    <div>
+                                        <p class="text-ink/80">课程时长</p>
+                                        <p class="text-ink">8周</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa fa-file-text-o text-ink/50 mt-1"></i>
+                                    <div>
+                                        <p class="text-ink/80">课程数量</p>
+                                        <p class="text-ink">24 节课</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa fa-signal text-ink/50 mt-1"></i>
+                                    <div>
+                                        <p class="text-ink/80">难度级别</p>
+                                        <p class="text-ink">入门级</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa fa-calendar text-ink/50 mt-1"></i>
+                                    <div>
+                                        <p class="text-ink/80">开课时间</p>
+                                        <p class="text-ink">随到随学</p>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <i class="fa fa-language text-ink/50 mt-1"></i>
+                                    <div>
+                                        <p class="text-ink/80">课程语言</p>
+                                        <p class="text-ink">中文</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="p-6">
+                            <h3 class="text-lg font-medium text-ink mb-4">常见问题</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="font-medium text-ink mb-1">购买后如何开始学习？</h4>
+                                    <p class="text-ink/70 text-sm">
+                                        购买成功后，你可以立即在个人中心找到这门课程，点击“开始学习”即可。
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-ink mb-1">课程有效期是多久？</h4>
+                                    <p class="text-ink/70 text-sm">
+                                        本课程为终身有效，你可以随时学习，没有时间限制。
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-ink mb-1">如何获得导师点评？</h4>
+                                    <p class="text-ink/70 text-sm">
+                                        完成课程作业后，你可以在作业提交页面申请导师点评，每位学员有2次免费点评机会。
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-ink mb-1">不满意可以退款吗？</h4>
+                                    <p class="text-ink/70 text-sm">
+                                        我们提供7天无理由退款服务，如果你对课程不满意，可以在购买后7天内申请退款。
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <a href="#" class="text-ink hover:text-accent transition-colors duration-300 font-medium flex items-center">
+                                    查看更多常见问题 <i class="fa fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 推荐课程 -->
+    <section class="py-16 md:py-24 bg-parchment/50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-serif font-bold text-ink mb-4">推荐课程</h2>
+                <p class="text-lg text-ink/80 max-w-2xl mx-auto">
+                    这些课程与你正在浏览的课程相关，可能对你有所帮助。
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 推荐课程1 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-lg card-shadow card-shadow-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/47/400/300" alt="长篇小说创作" class="w-full h-40 object-cover object-center">
+                        <div class="absolute top-2 right-2 bg-accent text-white text-xs font-bold px-2 py-1 rounded-full">
+                            畅销课程
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="px-2 py-1 bg-sand/20 text-ink rounded-full text-xs">小说</span>
+                            <div class="flex items-center text-yellow-500 text-xs">
+                                <i class="fa fa-star"></i>
+                                <span class="text-ink font-medium ml-1">4.9</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-serif font-bold text-ink mb-2">长篇小说创作：构建宏大世界</h3>
+                        <div class="flex items-center gap-2 mb-3">
+                            <img src="https://picsum.photos/id/1010/100/100" alt="路遥老师" class="w-6 h-6 rounded-full">
+                            <span class="text-ink/80 text-sm">路遥 导师</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-accent font-bold">¥499</span>
+                            <a href="novel-advanced.html" class="text-ink hover:text-accent transition-colors duration-300 text-sm">
+                                查看详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 推荐课程2 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-lg card-shadow card-shadow-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/43/400/300" alt="散文写作的艺术" class="w-full h-40 object-cover object-center">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="px-2 py-1 bg-sand/20 text-ink rounded-full text-xs">散文</span>
+                            <div class="flex items-center text-yellow-500 text-xs">
+                                <i class="fa fa-star"></i>
+                                <span class="text-ink font-medium ml-1">4.8</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-serif font-bold text-ink mb-2">散文写作的艺术：用文字记录生活</h3>
+                        <div class="flex items-center gap-2 mb-3">
+                            <img src="https://picsum.photos/id/65/100/100" alt="张晓黎老师" class="w-6 h-6 rounded-full">
+                            <span class="text-ink/80 text-sm">张晓黎 导师</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-accent font-bold">¥249</span>
+                            <a href="essay-art.html" class="text-ink hover:text-accent transition-colors duration-300 text-sm">
+                                查看详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 推荐课程3 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-lg card-shadow card-shadow-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/45/400/300" alt="现代诗歌创作" class="w-full h-40 object-cover object-center">
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="px-2 py-1 bg-sand/20 text-ink rounded-full text-xs">诗歌</span>
+                            <div class="flex items-center text-yellow-500 text-xs">
+                                <i class="fa fa-star"></i>
+                                <span class="text-ink font-medium ml-1">4.9</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-serif font-bold text-ink mb-2">现代诗歌创作：用意象表达情感</h3>
+                        <div class="flex items-center gap-2 mb-3">
+                            <img src="https://picsum.photos/id/64/100/100" alt="李乐明老师" class="w-6 h-6 rounded-full">
+                            <span class="text-ink/80 text-sm">李乐明 导师</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-accent font-bold">¥279</span>
+                            <a href="poetry-writing.html" class="text-ink hover:text-accent transition-colors duration-300 text-sm">
+                                查看详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 推荐课程4 -->
+                <div class="bg-white rounded-lg overflow-hidden shadow-lg card-shadow card-shadow-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/44/400/300" alt="剧本创作实战" class="w-full h-40 object-cover object-center">
+                        <div class="absolute top-2 right-2 bg-ink text-white text-xs font-bold px-2 py-1 rounded-full">
+                            新课
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="px-2 py-1 bg-sand/20 text-ink rounded-full text-xs">剧本</span>
+                            <div class="flex items-center text-yellow-500 text-xs">
+                                <i class="fa fa-star"></i>
+                                <span class="text-ink font-medium ml-1">4.7</span>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-serif font-bold text-ink mb-2">剧本创作实战：从故事到剧本</h3>
+                        <div class="flex items-center gap-2 mb-3">
+                            <img src="https://picsum.photos/id/66/100/100" alt="王浩然老师" class="w-6 h-6 rounded-full">
+                            <span class="text-ink/80 text-sm">王浩然 导师</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-accent font-bold">¥399</span>
+                            <a href="script-writing.html" class="text-ink hover:text-accent transition-colors duration-300 text-sm">
+                                查看详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 订阅区域 -->
+    <section class="py-16 md:py-24 bg-ink text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=" http:="" www.w3.org="" 2000="" svg"="" viewbox="0 0 100 100" preserveaspectratio="none"><path d="M0,0 Q25,50 50,25 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.05)">')] opacity-30"&gt;</path></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-serif font-bold mb-6">获取写作灵感与独家资源</h2>
+                <p class="text-lg text-white/80 mb-8">
+                    订阅我们的写作通讯，每周获取写作技巧、灵感提示和独家优惠，助你成为更优秀的写作者。
+                </p>
+                
+                <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                    <input type="email" placeholder="输入你的邮箱地址" class="flex-1 px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-accent">
+                    <button type="submit" class="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-md transition-all duration-300 font-medium whitespace-nowrap">
+                        立即订阅
+                    </button>
+                </form>
+                
+                <p class="text-sm text-white/60 mt-4">
+                    我们尊重你的隐私，绝不会分享你的个人信息。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-ink text-white pt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6">Inkwell</h3>
+                    <p class="text-white/70 mb-6">
+                        为年轻写作者和自由职业者打造的创意写作在线学习平台，提供专业课程、个性化指导和社区支持。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-wechat text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="../index.html" class="text-white/70 hover:text-white transition-colors duration-300">首页</a></li>
+                        <li><a href="index.html" class="text-white/70 hover:text-white transition-colors duration-300">课程</a></li>
+                        <li><a href="../mentors/index.html" class="text-white/70 hover:text-white transition-colors duration-300">导师</a></li>
+                        <li><a href="../index.html#writing-plan" class="text-white/70 hover:text-white transition-colors duration-300">写作计划</a></li>
+                        <li><a href="../index.html#community" class="text-white/70 hover:text-white transition-colors duration-300">社区</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">资源中心</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">写作技巧</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">写作素材</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">出版指南</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">自由职业资源</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">常见问题</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">联系我们</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">北京市朝阳区创意园B座501</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">contact@inkwell.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">+86 10 8888 7777</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-white/50 text-sm mb-4 md:mb-0">
+                        © 2025 Inkwell 创意写作平台. 保留所有权利.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">隐私政策</a>
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">服务条款</a>
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">Cookie 政策</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.add('bg-parchment/95');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.remove('bg-parchment/95');
+            }
+        });
+        
+        // 课程模块展开/收起
+        const moduleHeaders = document.querySelectorAll('.module-header');
+        
+        moduleHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const moduleId = header.getAttribute('data-module');
+                const content = document.getElementById(`module-${moduleId}`);
+                const icon = header.querySelector('i.fa-chevron-down');
+                
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+        
+        // 默认展开第一个模块
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstModule = document.querySelector('.module-header');
+            if (firstModule) {
+                firstModule.click();
+            }
+        });
+    </script>
+</body>
+</html>

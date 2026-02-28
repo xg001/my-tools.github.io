@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵感问答区 | Inkwell 创意写作平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#1A2456',      // 深蓝灰
+                        parchment: '#F5F2E9', // 米白
+                        sand: '#E8DCCA',     // 浅棕
+                        mahogany: '#5D4037', // 深棕
+                        accent: '#B71C1C',   // 暗红强调
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .typing-cursor {
+                border-right: 2px solid currentColor;
+                animation: cursor-blink 1.2s infinite;
+            }
+            .ink-splash {
+                position: relative;
+                overflow: hidden;
+            }
+            .ink-splash::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 Q25,50 50,25 T100,50 L100,100 L0,100 Z" fill="rgba(26, 36, 86, 0.03)" /></svg>');
+                background-size: 100% 100%;
+                opacity: 0.5;
+                z-index: -1;
+            }
+            .paper-float {
+                transform: translateY(0);
+                transition: transform 0.5s ease-in-out;
+            }
+            .paper-float:hover {
+                transform: translateY(-5px) rotate(1deg);
+            }
+            .card-shadow {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            }
+            .card-shadow-hover {
+                transition: all 0.3s ease;
+            }
+            .card-shadow-hover:hover {
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                transform: translateY(-2px);
+            }
+            .question-card {
+                transition: all 0.3s ease;
+            }
+            .question-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            }
+        }
+        
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-parchment text-ink font-sans">
+    <!-- 导航栏 -->
+    <header class="fixed w-full bg-parchment/90 backdrop-blur-sm z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <div class="flex items-center">
+                    <a href="../index.html" class="flex items-center">
+                        <span class="text-ink font-serif font-bold text-2xl md:text-3xl">Inkwell</span>
+                    </a>
+                </div>
+                
+                <!-- 桌面导航 -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="../courses/index.html" class="text-ink hover:text-accent transition-colors duration-300 font-medium">课程</a>
+                    <a href="../mentors/index.html" class="text-ink hover:text-accent transition-colors duration-300 font-medium">导师</a>
+                    <a href="../index.html#writing-plan" class="text-ink hover:text-accent transition-colors duration-300 font-medium">写作计划</a>
+                    <a href="../index.html#community" class="text-accent font-medium">社区</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="../auth/login.html" class="hidden md:block text-ink hover:text-accent transition-colors duration-300 font-medium">登录</a>
+                    <a href="../auth/register.html" class="hidden md:block bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300">注册</a>
+                    
+                    <!-- 移动端菜单按钮 -->
+                    <button type="button" id="mobile-menu-button" class="md:hidden text-ink focus:outline-none">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-parchment border-t border-sand/30">
+            <div class="px-4 py-3 space-y-3">
+                <a href="../courses/index.html" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">课程</a>
+                <a href="../mentors/index.html" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">导师</a>
+                <a href="../index.html#writing-plan" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">写作计划</a>
+                <a href="../index.html#community" class="block text-accent font-medium">社区</a>
+                <div class="flex space-x-4 pt-2">
+                    <a href="../auth/login.html" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">登录</a>
+                    <a href="../auth/register.html" class="block bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300">注册</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 页面标题 -->
+    <section class="pt-32 pb-12 md:pt-40 md:pb-16 relative overflow-hidden ink-splash">
+        <div class="absolute inset-0 bg-ink/5 -z-10"></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-serif font-bold leading-tight text-ink mb-6">
+                    灵感问答区
+                </h1>
+                <p class="text-lg md:text-xl text-ink/80 max-w-3xl mx-auto">
+                    在这里提出你的写作问题，与其他写作者交流想法，分享灵感。无论你是遇到了写作瓶颈，还是想要寻求 feedback，这里都是你的理想之地。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 问答区 -->
+    <section class="py-12 md:py-16 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- 左侧：问题列表 -->
+                <div class="lg:w-3/4">
+                    <!-- 提问按钮 -->
+                    <div class="mb-8 text-center lg:text-left">
+                        <button id="ask-question-btn" class="px-6 py-3 bg-accent hover:bg-accent/90 text-white rounded-md transition-all duration-300 font-medium inline-flex items-center">
+                            <i class="fa fa-plus-circle mr-2"></i> 我要提问
+                        </button>
+                    </div>
+                    
+                    <!-- 筛选和搜索 -->
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                        <div class="flex items-center gap-4">
+                            <span class="text-ink/70">筛选：</span>
+                            <select class="bg-parchment/50 border border-sand/50 rounded-md px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-ink/20">
+                                <option>最新问题</option>
+                                <option>最多回答</option>
+                                <option>最多关注</option>
+                                <option>我的问题</option>
+                            </select>
+                        </div>
+                        
+                        <div class="relative w-full md:w-auto max-w-md">
+                            <input type="text" placeholder="搜索问题..." class="w-full pl-10 pr-4 py-2 border border-sand/50 rounded-full bg-parchment/50 text-ink placeholder-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-ink/50">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题列表 -->
+                    <div class="space-y-6" id="questions-list">
+                        <!-- 问题1 -->
+                        <div class="bg-parchment rounded-lg p-6 shadow-lg question-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://picsum.photos/id/64/100/100" alt="用户头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-ink">张明</h3>
+                                        <p class="text-ink/60 text-sm">2025年2月20日</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">小说</span>
+                            </div>
+                            
+                            <h2 class="text-xl font-serif font-bold text-ink mb-3">如何塑造一个复杂而立体的反派角色？</h2>
+                            
+                            <p class="text-ink/80 mb-4">
+                                我正在写一部小说，里面需要一个反派角色。我希望他不是一个单纯的坏人，而是有自己的动机和背景，让读者能够理解他的行为。请问如何才能塑造这样一个复杂而立体的反派角色？
+                            </p>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-comment"></i>
+                                        <span>12 回答</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-eye"></i>
+                                        <span>256 浏览</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-heart"></i>
+                                        <span>34 关注</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-bookmark-o"></i>
+                                    </button>
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问题2 -->
+                        <div class="bg-parchment rounded-lg p-6 shadow-lg question-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://picsum.photos/id/65/100/100" alt="用户头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-ink">李华</h3>
+                                        <p class="text-ink/60 text-sm">2025年2月19日</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">散文</span>
+                            </div>
+                            
+                            <h2 class="text-xl font-serif font-bold text-ink mb-3">如何在散文中更好地表达情感？</h2>
+                            
+                            <p class="text-ink/80 mb-4">
+                                我写散文时总是感觉情感表达不够到位，读者很难产生共鸣。请问有什么技巧可以帮助我在散文中更好地表达情感，让文章更有感染力？
+                            </p>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-comment"></i>
+                                        <span>8 回答</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-eye"></i>
+                                        <span>189 浏览</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-heart"></i>
+                                        <span>23 关注</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-bookmark-o"></i>
+                                    </button>
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问题3 -->
+                        <div class="bg-parchment rounded-lg p-6 shadow-lg question-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://picsum.photos/id/66/100/100" alt="用户头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-ink">王芳</h3>
+                                        <p class="text-ink/60 text-sm">2025年2月18日</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">诗歌</span>
+                            </div>
+                            
+                            <h2 class="text-xl font-serif font-bold text-ink mb-3">现代诗歌的韵律和节奏如何把握？</h2>
+                            
+                            <p class="text-ink/80 mb-4">
+                                我刚开始尝试写现代诗歌，但总是把握不好韵律和节奏。现代诗歌不像古典诗词有固定的格律，请问有什么方法可以帮助我更好地把握现代诗歌的韵律和节奏？
+                            </p>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-comment"></i>
+                                        <span>15 回答</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-eye"></i>
+                                        <span>312 浏览</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-heart"></i>
+                                        <span>42 关注</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-bookmark-o"></i>
+                                    </button>
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问题4 -->
+                        <div class="bg-parchment rounded-lg p-6 shadow-lg question-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://picsum.photos/id/67/100/100" alt="用户头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-ink">李强</h3>
+                                        <p class="text-ink/60 text-sm">2025年2月17日</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">剧本</span>
+                            </div>
+                            
+                            <h2 class="text-xl font-serif font-bold text-ink mb-3">剧本创作中如何设计精彩的对话？</h2>
+                            
+                            <p class="text-ink/80 mb-4">
+                                我在写剧本时，对话部分总是显得很生硬，不够自然。请问如何才能设计出精彩、生动、符合人物性格的对话？有什么技巧可以让对话更有张力？
+                            </p>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-comment"></i>
+                                        <span>10 回答</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-eye"></i>
+                                        <span>245 浏览</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-heart"></i>
+                                        <span>28 关注</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-bookmark-o"></i>
+                                    </button>
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 问题5 -->
+                        <div class="bg-parchment rounded-lg p-6 shadow-lg question-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://picsum.photos/id/68/100/100" alt="用户头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h3 class="font-medium text-ink">张华</h3>
+                                        <p class="text-ink/60 text-sm">2025年2月16日</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">非虚构</span>
+                            </div>
+                            
+                            <h2 class="text-xl font-serif font-bold text-ink mb-3">如何写好一篇人物专访？</h2>
+                            
+                            <p class="text-ink/80 mb-4">
+                                我需要为一家杂志写一篇人物专访，但这是我第一次尝试这种体裁。请问写人物专访有什么技巧？如何才能让专访既真实又生动，能够展现人物的个性和故事？
+                            </p>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-comment"></i>
+                                        <span>6 回答</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-eye"></i>
+                                        <span>178 浏览</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 text-ink/60">
+                                        <i class="fa fa-heart"></i>
+                                        <span>19 关注</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-bookmark-o"></i>
+                                    </button>
+                                    <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                                        <i class="fa fa-share-alt"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 分页 -->
+                    <div class="flex justify-center mt-12">
+                        <nav class="inline-flex rounded-md shadow">
+                            <a href="#" class="py-2 px-4 bg-white border border-sand/30 rounded-l-md text-ink hover:bg-parchment transition-colors duration-300">
+                                <i class="fa fa-chevron-left"></i>
+                            </a>
+                            <a href="#" class="py-2 px-4 bg-ink text-white border border-ink">1</a>
+                            <a href="#" class="py-2 px-4 bg-white border border-sand/30 text-ink hover:bg-parchment transition-colors duration-300">2</a>
+                            <a href="#" class="py-2 px-4 bg-white border border-sand/30 text-ink hover:bg-parchment transition-colors duration-300">3</a>
+                            <a href="#" class="py-2 px-4 bg-white border border-sand/30 rounded-r-md text-ink hover:bg-parchment transition-colors duration-300">
+                                <i class="fa fa-chevron-right"></i>
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+                
+                <!-- 右侧：热门话题和推荐 -->
+                <div class="lg:w-1/4">
+                    <div class="bg-white rounded-lg shadow-lg card-shadow sticky top-24">
+                        <!-- 热门话题 -->
+                        <div class="p-6 border-b border-sand/30">
+                            <h3 class="text-lg font-serif font-bold text-ink mb-4">热门话题</h3>
+                            <div class="space-y-3">
+                                <a href="#" class="flex items-center justify-between p-3 bg-parchment/50 rounded-md hover:bg-parchment transition-colors duration-300">
+                                    <span class="text-ink">小说创作技巧</span>
+                                    <span class="bg-ink/10 text-ink text-xs px-2 py-1 rounded-full">128 个问题</span>
+                                </a>
+                                <a href="#" class="flex items-center justify-between p-3 bg-parchment/50 rounded-md hover:bg-parchment transition-colors duration-300">
+                                    <span class="text-ink">人物塑造</span>
+                                    <span class="bg-ink/10 text-ink text-xs px-2 py-1 rounded-full">96 个问题</span>
+                                </a>
+                                <a href="#" class="flex items-center justify-between p-3 bg-parchment/50 rounded-md hover:bg-parchment transition-colors duration-300">
+                                    <span class="text-ink">情节设计</span>
+                                    <span class="bg-ink/10 text-ink text-xs px-2 py-1 rounded-full">85 个问题</span>
+                                </a>
+                                <a href="#" class="flex items-center justify-between p-3 bg-parchment/50 rounded-md hover:bg-parchment transition-colors duration-300">
+                                    <span class="text-ink">写作瓶颈</span>
+                                    <span class="bg-ink/10 text-ink text-xs px-2 py-1 rounded-full">72 个问题</span>
+                                </a>
+                                <a href="#" class="flex items-center justify-between p-3 bg-parchment/50 rounded-md hover:bg-parchment transition-colors duration-300">
+                                    <span class="text-ink">出版经验</span>
+                                    <span class="bg-ink/10 text-ink text-xs px-2 py-1 rounded-full">54 个问题</span>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- 推荐导师 -->
+                        <div class="p-6 border-b border-sand/30">
+                            <h3 class="text-lg font-serif font-bold text-ink mb-4">推荐导师</h3>
+                            <div class="space-y-4">
+                                <a href="../mentors/yu-hua.html" class="flex items-center gap-3 p-3 bg-parchment/50 rounded-md hover:bg-parchment transition-colors duration-300">
+                                    <img src="https://picsum.photos/id/1005/100/100" alt="余华老师" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h4 class="font-medium text-ink">余华</h4>
+                                        <p class="text-ink/60 text-sm">当代著名作家</p>
+                                    </div>
+                                </a>
+                                <a href="../mentors/mo-yan.html" class="flex items-center gap-3 p-3 bg-parchment/50 rounded-md hover:bg-parchment transition-colors duration-300">
+                                    <img src="https://picsum.photos/id/1012/100/100" alt="莫言老师" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h4 class="font-medium text-ink">莫言</h4>
+                                        <p class="text-ink/60 text-sm">诺贝尔文学奖得主</p>
+                                    </div>
+                                </a>
+                                <a href="../mentors/lu-yao.html" class="flex items-center gap-3 p-3 bg-parchment/50 rounded-md hover:bg-parchment transition-colors duration-300">
+                                    <img src="https://picsum.photos/id/1010/100/100" alt="路遥老师" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <h4 class="font-medium text-ink">路遥</h4>
+                                        <p class="text-ink/60 text-sm">当代现实主义作家</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- 社区规则 -->
+                        <div class="p-6">
+                            <h3 class="text-lg font-serif font-bold text-ink mb-4">社区规则</h3>
+                            <ul class="space-y-2 text-ink/80 text-sm">
+                                <li class="flex items-start gap-2">
+                                    <i class="fa fa-check-circle text-accent mt-1"></i>
+                                    <span>尊重他人，友善交流</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fa fa-check-circle text-accent mt-1"></i>
+                                    <span>保护原创，注明引用</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fa fa-check-circle text-accent mt-1"></i>
+                                    <span>积极参与，分享经验</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fa fa-check-circle text-accent mt-1"></i>
+                                    <span>遵守法律法规</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <i class="fa fa-check-circle text-accent mt-1"></i>
+                                    <span>营造良好的创作氛围</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 提问弹窗 -->
+    <div id="ask-question-modal" class="fixed inset-0 bg-ink/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-sand/30">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-serif font-bold text-ink">我要提问</h2>
+                    <button id="close-modal-btn" class="text-ink/50 hover:text-ink transition-colors duration-300">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <form id="ask-question-form">
+                    <div class="mb-6">
+                        <label for="question-title" class="block text-ink font-medium mb-2">问题标题</label>
+                        <input type="text" id="question-title" placeholder="请输入你的问题标题..." class="w-full px-4 py-3 border border-sand/50 rounded-md bg-parchment/50 text-ink placeholder-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="question-category" class="block text-ink font-medium mb-2">问题分类</label>
+                        <select id="question-category" class="w-full px-4 py-3 border border-sand/50 rounded-md bg-parchment/50 text-ink focus:outline-none focus:ring-2 focus:ring-ink/20">
+                            <option value="">请选择问题分类</option>
+                            <option value="novel">小说</option>
+                            <option value="essay">散文</option>
+                            <option value="poetry">诗歌</option>
+                            <option value="script">剧本</option>
+                            <option value="nonfiction">非虚构</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="question-content" class="block text-ink font-medium mb-2">问题详情</label>
+                        <textarea id="question-content" rows="8" placeholder="请详细描述你的问题，包括你遇到的困难、你的想法等..." class="w-full px-4 py-3 border border-sand/50 rounded-md bg-parchment/50 text-ink placeholder-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20"></textarea>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label class="block text-ink font-medium mb-2">添加标签（可选）</label>
+                        <div class="flex flex-wrap gap-2" id="tags-container">
+                            <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm flex items-center">
+                                写作技巧
+                                <button type="button" class="ml-2 text-ink/50 hover:text-ink">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-3">
+                            <input type="text" id="new-tag" placeholder="添加新标签..." class="flex-1 px-3 py-2 border border-sand/50 rounded-md bg-parchment/50 text-ink placeholder-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20">
+                            <button type="button" id="add-tag-btn" class="px-3 py-2 bg-ink hover:bg-ink/90 text-white rounded-md transition-colors duration-300">
+                                添加
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-4">
+                        <button type="button" id="cancel-question-btn" class="px-6 py-3 border border-ink text-ink hover:bg-ink/5 rounded-md transition-all duration-300 font-medium">
+                            取消
+                        </button>
+                        <button type="submit" class="px-6 py-3 bg-accent hover:bg-accent/90 text-white rounded-md transition-all duration-300 font-medium">
+                            发布问题
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订阅区域 -->
+    <section class="py-16 md:py-24 bg-ink text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=" http:="" www.w3.org="" 2000="" svg"="" viewbox="0 0 100 100" preserveaspectratio="none"><path d="M0,0 Q25,50 50,25 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.05)">')] opacity-30"&gt;</path></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-serif font-bold mb-6">获取写作灵感与独家资源</h2>
+                <p class="text-lg text-white/80 mb-8">
+                    订阅我们的写作通讯，每周获取写作技巧、灵感提示和独家优惠，助你成为更优秀的写作者。
+                </p>
+                
+                <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                    <input type="email" placeholder="输入你的邮箱地址" class="flex-1 px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-accent">
+                    <button type="submit" class="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-md transition-all duration-300 font-medium whitespace-nowrap">
+                        立即订阅
+                    </button>
+                </form>
+                
+                <p class="text-sm text-white/60 mt-4">
+                    我们尊重你的隐私，绝不会分享你的个人信息。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-ink text-white pt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6">Inkwell</h3>
+                    <p class="text-white/70 mb-6">
+                        为年轻写作者和自由职业者打造的创意写作在线学习平台，提供专业课程、个性化指导和社区支持。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-wechat text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="../index.html" class="text-white/70 hover:text-white transition-colors duration-300">首页</a></li>
+                        <li><a href="../courses/index.html" class="text-white/70 hover:text-white transition-colors duration-300">课程</a></li>
+                        <li><a href="../mentors/index.html" class="text-white/70 hover:text-white transition-colors duration-300">导师</a></li>
+                        <li><a href="../index.html#writing-plan" class="text-white/70 hover:text-white transition-colors duration-300">写作计划</a></li>
+                        <li><a href="../index.html#community" class="text-white/70 hover:text-white transition-colors duration-300">社区</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">资源中心</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">写作技巧</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">写作素材</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">出版指南</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">自由职业资源</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">常见问题</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">联系我们</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">北京市朝阳区创意园B座501</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">contact@inkwell.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">+86 10 8888 7777</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-white/50 text-sm mb-4 md:mb-0">
+                        © 2025 Inkwell 创意写作平台. 保留所有权利.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">隐私政策</a>
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">服务条款</a>
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">Cookie 政策</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.add('bg-parchment/95');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.remove('bg-parchment/95');
+            }
+        });
+        
+        // 提问弹窗
+        const askQuestionBtn = document.getElementById('ask-question-btn');
+        const askQuestionModal = document.getElementById('ask-question-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const cancelQuestionBtn = document.getElementById('cancel-question-btn');
+        const askQuestionForm = document.getElementById('ask-question-form');
+        
+        // 打开弹窗
+        askQuestionBtn.addEventListener('click', () => {
+            askQuestionModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // 关闭弹窗
+        function closeModal() {
+            askQuestionModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelQuestionBtn.addEventListener('click', closeModal);
+        
+        // 点击弹窗外部关闭弹窗
+        askQuestionModal.addEventListener('click', (e) => {
+            if (e.target === askQuestionModal) {
+                closeModal();
+            }
+        });
+        
+        // 添加标签
+        const addTagBtn = document.getElementById('add-tag-btn');
+        const newTagInput = document.getElementById('new-tag');
+        const tagsContainer = document.getElementById('tags-container');
+        
+        addTagBtn.addEventListener('click', () => {
+            const tagText = newTagInput.value.trim();
+            if (tagText) {
+                const tagElement = document.createElement('span');
+                tagElement.className = 'px-3 py-1 bg-sand/20 text-ink rounded-full text-sm flex items-center';
+                tagElement.innerHTML = `
+                    ${tagText}
+                    <button type="button" class="ml-2 text-ink/50 hover:text-ink">
+                        <i class="fa fa-times"></i>
+                    </button>
+                `;
+                
+                // 添加删除标签的事件
+                const deleteBtn = tagElement.querySelector('button');
+                deleteBtn.addEventListener('click', () => {
+                    tagElement.remove();
+                });
+                
+                tagsContainer.appendChild(tagElement);
+                newTagInput.value = '';
+            }
+        });
+        
+        // 按Enter键添加标签
+        newTagInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addTagBtn.click();
+            }
+        });
+        
+        // 删除默认标签
+        const defaultTagDeleteBtn = tagsContainer.querySelector('button');
+        defaultTagDeleteBtn.addEventListener('click', function() {
+            this.parentElement.remove();
+        });
+        
+        // 提交表单
+        askQuestionForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('question-title').value.trim();
+            const category = document.getElementById('question-category').value;
+            const content = document.getElementById('question-content').value.trim();
+            
+            if (!title || !category || !content) {
+                alert('请填写完整的问题信息！');
+                return;
+            }
+            
+            // 获取所有标签
+            const tags = Array.from(tagsContainer.querySelectorAll('span')).map(tag => {
+                return tag.textContent.trim().replace('×', '');
+            });
+            
+            // 创建新问题
+            const newQuestion = {
+                id: Date.now(),
+                title: title,
+                category: category,
+                content: content,
+                tags: tags,
+                author: '我',
+                avatar: 'https://picsum.photos/id/64/100/100',
+                date: new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }),
+                answers: 0,
+                views: 0,
+                follows: 0
+            };
+            
+            // 添加新问题到列表
+            addQuestionToDOM(newQuestion);
+            
+            // 重置表单
+            askQuestionForm.reset();
+            tagsContainer.innerHTML = '';
+            
+            // 关闭弹窗
+            closeModal();
+            
+            // 显示成功提示
+            alert('问题发布成功！');
+        });
+        
+        // 将新问题添加到DOM
+        function addQuestionToDOM(question) {
+            const questionsList = document.getElementById('questions-list');
+            
+            const categoryMap = {
+                'novel': '小说',
+                'essay': '散文',
+                'poetry': '诗歌',
+                'script': '剧本',
+                'nonfiction': '非虚构',
+                'other': '其他'
+            };
+            
+            const questionElement = document.createElement('div');
+            questionElement.className = 'bg-parchment rounded-lg p-6 shadow-lg question-card';
+            questionElement.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <img src="${question.avatar}" alt="用户头像" class="w-10 h-10 rounded-full">
+                        <div>
+                            <h3 class="font-medium text-ink">${question.author}</h3>
+                            <p class="text-ink/60 text-sm">${question.date}</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">${categoryMap[question.category] || '其他'}</span>
+                </div>
+                
+                <h2 class="text-xl font-serif font-bold text-ink mb-3">${question.title}</h2>
+                
+                <p class="text-ink/80 mb-4">
+                    ${question.content}
+                </p>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-1 text-ink/60">
+                            <i class="fa fa-comment"></i>
+                            <span>${question.answers} 回答</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-ink/60">
+                            <i class="fa fa-eye"></i>
+                            <span>${question.views} 浏览</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-ink/60">
+                            <i class="fa fa-heart"></i>
+                            <span>${question.follows} 关注</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                            <i class="fa fa-bookmark-o"></i>
+                        </button>
+                        <button class="text-ink/60 hover:text-ink transition-colors duration-300">
+                            <i class="fa fa-share-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // 将新问题添加到列表顶部
+            questionsList.insertBefore(questionElement, questionsList.firstChild);
+            
+            // 添加动画效果
+            questionElement.style.opacity = '0';
+            questionElement.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                questionElement.style.transition = 'all 0.3s ease';
+                questionElement.style.opacity = '1';
+                questionElement.style.transform = 'translateY(0)';
+            }, 10);
+        }
+    </script>
+</body>
+</html>

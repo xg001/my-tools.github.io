@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>莫言 | 专业导师详情 | Inkwell 创意写作平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#1A2456',      // 深蓝灰
+                        parchment: '#F5F2E9', // 米白
+                        sand: '#E8DCCA',     // 浅棕
+                        mahogany: '#5D4037', // 深棕
+                        accent: '#B71C1C',   // 暗红强调
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .typing-cursor {
+                border-right: 2px solid currentColor;
+                animation: cursor-blink 1.2s infinite;
+            }
+            .ink-splash {
+                position: relative;
+                overflow: hidden;
+            }
+            .ink-splash::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 Q25,50 50,25 T100,50 L100,100 L0,100 Z" fill="rgba(26, 36, 86, 0.03)" /></svg>');
+                background-size: 100% 100%;
+                opacity: 0.5;
+                z-index: -1;
+            }
+            .paper-float {
+                transform: translateY(0);
+                transition: transform 0.5s ease-in-out;
+            }
+            .paper-float:hover {
+                transform: translateY(-5px) rotate(1deg);
+            }
+            .card-shadow {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            }
+            .card-shadow-hover {
+                transition: all 0.3s ease;
+            }
+            .card-shadow-hover:hover {
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                transform: translateY(-2px);
+            }
+            .book-card {
+                transition: all 0.3s ease;
+            }
+            .book-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            }
+            .timeline-item {
+                position: relative;
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 8px;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background-color: theme('colors.accent');
+                z-index: 1;
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: 5px;
+                top: 24px;
+                width: 2px;
+                height: calc(100% + 24px);
+                background-color: theme('colors.sand');
+            }
+            .timeline-item:last-child::after {
+                display: none;
+            }
+        }
+        
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="bg-parchment text-ink font-sans">
+    <!-- 导航栏 -->
+    <header class="fixed w-full bg-parchment/90 backdrop-blur-sm z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <div class="flex items-center">
+                    <a href="../index.html" class="flex items-center">
+                        <span class="text-ink font-serif font-bold text-2xl md:text-3xl">Inkwell</span>
+                    </a>
+                </div>
+                
+                <!-- 桌面导航 -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="../index.html#courses" class="text-ink hover:text-accent transition-colors duration-300 font-medium">课程</a>
+                    <a href="index.html" class="text-accent font-medium">导师</a>
+                    <a href="../index.html#writing-plan" class="text-ink hover:text-accent transition-colors duration-300 font-medium">写作计划</a>
+                    <a href="../index.html#community" class="text-ink hover:text-accent transition-colors duration-300 font-medium">社区</a>
+                </nav>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="../auth/login.html" class="hidden md:block text-ink hover:text-accent transition-colors duration-300 font-medium">登录</a>
+                    <a href="../auth/register.html" class="hidden md:block bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300">注册</a>
+                    
+                    <!-- 移动端菜单按钮 -->
+                    <button type="button" id="mobile-menu-button" class="md:hidden text-ink focus:outline-none">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-parchment border-t border-sand/30">
+            <div class="px-4 py-3 space-y-3">
+                <a href="../index.html#courses" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">课程</a>
+                <a href="index.html" class="block text-accent font-medium">导师</a>
+                <a href="../index.html#writing-plan" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">写作计划</a>
+                <a href="../index.html#community" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">社区</a>
+                <div class="flex space-x-4 pt-2">
+                    <a href="../auth/login.html" class="block text-ink hover:text-accent transition-colors duration-300 font-medium">登录</a>
+                    <a href="../auth/register.html" class="block bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300">注册</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 导师详情 -->
+    <section class="pt-32 pb-12 md:pt-40 md:pb-16 relative overflow-hidden ink-splash">
+        <div class="absolute inset-0 bg-ink/5 -z-10"></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- 左侧：导师照片和基本信息 -->
+                <div class="lg:w-1/3">
+                    <div class="bg-white rounded-lg overflow-hidden shadow-lg card-shadow sticky top-24">
+                        <div class="relative">
+                            <img src="https://picsum.photos/id/1012/600/800" alt="莫言老师" class="w-full h-80 object-cover object-center">
+                            <div class="absolute inset-0 bg-gradient-to-t from-ink/80 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <h1 class="text-2xl md:text-3xl font-serif font-bold">莫言</h1>
+                                <p class="text-white/80">诺贝尔文学奖得主</p>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <h2 class="text-lg font-medium text-ink mb-3">基本信息</h2>
+                                <ul class="space-y-3">
+                                    <li class="flex items-start">
+                                        <i class="fa fa-calendar mt-1 mr-3 text-ink/50"></i>
+                                        <span class="text-ink/80">1955年2月17日</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-map-marker mt-1 mr-3 text-ink/50"></i>
+                                        <span class="text-ink/80">山东高密</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-graduation-cap mt-1 mr-3 text-ink/50"></i>
+                                        <span class="text-ink/80">解放军艺术学院文学系</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fa fa-award mt-1 mr-3 text-ink/50"></i>
+                                        <span class="text-ink/80">2012年诺贝尔文学奖、茅盾文学奖等</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h2 class="text-lg font-medium text-ink mb-3">专业领域</h2>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">小说创作</span>
+                                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">魔幻现实主义</span>
+                                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">民间文学</span>
+                                    <span class="px-3 py-1 bg-sand/20 text-ink rounded-full text-sm">乡土文学</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h2 class="text-lg font-medium text-ink mb-3">教学风格</h2>
+                                <p class="text-ink/80">
+                                    莫言的教学风格充满激情和想象力，他注重培养学生的创造力和独特的写作风格，鼓励学生从民间文化和乡土生活中汲取灵感，通过丰富的想象力创造出独特的文学世界。
+                                </p>
+                            </div>
+                            
+                            <div class="flex space-x-3">
+                                <a href="#" class="flex-1 bg-ink hover:bg-ink/90 text-white px-4 py-2 rounded-md transition-colors duration-300 text-center">
+                                    <i class="fa fa-paper-plane mr-2"></i> 联系导师
+                                </a>
+                                <a href="#" class="flex-1 border border-ink text-ink hover:bg-ink/5 px-4 py-2 rounded-md transition-colors duration-300 text-center">
+                                    <i class="fa fa-book mr-2"></i> 查看课程
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧：导师详细介绍 -->
+                <div class="lg:w-2/3">
+                    <!-- 个人简介 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8 mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-4">个人简介</h2>
+                        <div class="prose prose-ink max-w-none">
+                            <p class="text-ink/80 mb-4">
+                                莫言，本名管谟业，1955年2月17日出生于山东高密，中国当代作家，2012年获得诺贝尔文学奖，是首位获得该奖项的中国籍作家。1976年参军，1984年考入解放军艺术学院文学系，1986年毕业。
+                            </p>
+                            <p class="text-ink/80 mb-4">
+                                莫言的作品充满了浓郁的乡土气息和魔幻现实主义色彩，他以独特的想象力和丰富的语言，描绘了中国农村的历史变迁和人民的生活状况。代表作品有《红高粱家族》《丰乳肥臀》《檀香刑》《蛙》等。
+                            </p>
+                            <p class="text-ink/80">
+                                莫言的创作风格深受民间文学和传统文学的影响，同时融合了西方现代主义文学的表现手法。他的作品既有强烈的艺术感染力，又有深刻的思想内涵，是中国当代文学的重要代表。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 代表作品 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8 mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">代表作品</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 作品1 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/28/300/400" alt="红高粱家族" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">红高粱家族</h3>
+                                        <p class="text-sm text-ink/60 mb-2">1986年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了抗日战争时期，山东高密地区一个普通农民家庭的故事。小说以红高粱为背景，描绘了中华民族在抗日战争中的英勇斗争和不屈精神...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品2 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/29/300/400" alt="丰乳肥臀" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">丰乳肥臀</h3>
+                                        <p class="text-sm text-ink/60 mb-2">1995年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了一个母亲和她的八个女儿的故事，通过这个家庭的命运，展现了中国从抗日战争到改革开放的历史变迁...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品3 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/30/300/400" alt="檀香刑" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">檀香刑</h3>
+                                        <p class="text-sm text-ink/60 mb-2">2001年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了清朝末年，山东高密地区发生的一起重大历史事件。小说以檀香刑为线索，描绘了中国封建社会末期的社会矛盾和人民的反抗斗争...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品4 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/31/300/400" alt="蛙" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">蛙</h3>
+                                        <p class="text-sm text-ink/60 mb-2">2009年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了中国计划生育政策实施过程中，一个妇产科医生的故事。小说通过这个医生的经历，展现了中国社会的变迁和人性的复杂...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品5 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/32/300/400" alt="生死疲劳" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">生死疲劳</h3>
+                                        <p class="text-sm text-ink/60 mb-2">2006年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了一个地主在土地改革中被枪毙后，灵魂转世为驴、牛、猪、狗、猴等动物，通过这些动物的视角，观察和体验中国农村的历史变迁...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 作品6 -->
+                            <div class="bg-parchment rounded-lg overflow-hidden shadow book-card">
+                                <div class="flex">
+                                    <div class="w-1/3">
+                                        <img src="https://picsum.photos/id/33/300/400" alt="四十一炮" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="w-2/3 p-4">
+                                        <h3 class="text-lg font-medium text-ink mb-1">四十一炮</h3>
+                                        <p class="text-sm text-ink/60 mb-2">2003年</p>
+                                        <p class="text-sm text-ink/80 line-clamp-3">
+                                            讲述了一个少年在改革开放初期的成长经历，通过他的视角，展现了中国农村在市场经济冲击下的变化和人们价值观的转变...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 创作历程 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8 mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">创作历程</h2>
+                        
+                        <div class="pl-6 space-y-8">
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">1955-1975：早年经历</h3>
+                                <p class="text-ink/80">
+                                    1955年2月17日，莫言出生于山东高密一个普通农民家庭。童年时期，他经历了中国的三年困难时期，这些经历对他后来的创作产生了深远的影响。
+                                </p>
+                            </div>
+                            
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">1976-1985：参军与创作初期</h3>
+                                <p class="text-ink/80">
+                                    1976年，莫言参军，在部队担任图书管理员，这使他有机会阅读大量文学作品。1981年，他开始发表小说，1984年考入解放军艺术学院文学系。
+                                </p>
+                            </div>
+                            
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">1986-1999：创作高峰期</h3>
+                                <p class="text-ink/80">
+                                    1986年，莫言发表长篇小说《红高粱家族》，这部作品以独特的风格引起文坛关注。此后，他陆续发表了《天堂蒜薹之歌》《酒国》等作品，确立了自己在文坛的地位。
+                                </p>
+                            </div>
+                            
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">2000-2011：创作深化期</h3>
+                                <p class="text-ink/80">
+                                    2000年以后，莫言的创作更加成熟和深刻。他发表了《檀香刑》《四十一炮》《生死疲劳》《蛙》等作品，这些作品在思想深度和艺术技巧上都达到了新的高度。
+                                </p>
+                            </div>
+                            
+                            <div class="timeline-item pl-8">
+                                <h3 class="text-lg font-medium text-ink mb-2">2012至今：诺贝尔文学奖之后</h3>
+                                <p class="text-ink/80">
+                                    2012年，莫言获得诺贝尔文学奖，成为首位获得该奖项的中国籍作家。此后，他的作品在国际上获得了更广泛的关注和认可。近年来，莫言主要从事文学创作和文化交流活动。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 写作理念 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8 mb-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">写作理念</h2>
+                        
+                        <div class="space-y-6">
+                            <div class="bg-parchment/50 rounded-lg p-4">
+                                <blockquote class="text-ink font-serif italic text-lg">
+                                    "文学应该是有力量的，它能够揭露黑暗，歌颂光明，它能够让人在苦难中看到希望。"
+                                </blockquote>
+                            </div>
+                            
+                            <p class="text-ink/80">
+                                莫言认为，文学是一种有力量的表达方式，它不仅能够反映现实，还能够影响现实。他强调，作家应该有社会责任感，通过作品揭露社会问题，歌颂人性的美好。
+                            </p>
+                            
+                            <p class="text-ink/80">
+                                在创作方法上，莫言注重想象力的发挥和语言的创新。他认为，想象力是作家最重要的品质之一，只有通过丰富的想象力，才能创造出独特的文学世界。同时，他也强调语言的重要性，认为好的文学作品应该有独特的语言风格。
+                            </p>
+                            
+                            <p class="text-ink/80">
+                                莫言还强调，作家应该扎根于自己的文化传统和生活经验。他的作品深受中国民间文化和乡土生活的影响，这使他的作品具有鲜明的民族特色和地域特色。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 学生评价 -->
+                    <div class="bg-white rounded-lg shadow-lg card-shadow p-6 md:p-8">
+                        <h2 class="text-2xl font-serif font-bold text-ink mb-6">学生评价</h2>
+                        
+                        <div class="space-y-6">
+                            <!-- 评价1 -->
+                            <div class="border-b border-sand/30 pb-6">
+                                <div class="flex items-center mb-3">
+                                    <img src="https://picsum.photos/id/67/100/100" alt="学生头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h3 class="font-medium text-ink">李强</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-ink/80">
+                                    莫言老师的课充满了激情和想象力，他让我明白了文学创作不仅是技巧的问题，更是心灵的表达。他的指导让我对文学创作有了全新的认识。
+                                </p>
+                            </div>
+                            
+                            <!-- 评价2 -->
+                            <div class="border-b border-sand/30 pb-6">
+                                <div class="flex items-center mb-3">
+                                    <img src="https://picsum.photos/id/68/100/100" alt="学生头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h3 class="font-medium text-ink">张华</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star-half-o"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-ink/80">
+                                    莫言老师是一位非常有才华的作家和老师，他的课既有理论指导，又有实践练习。他善于发现每个学生的特点，并有针对性地进行指导。
+                                </p>
+                            </div>
+                            
+                            <!-- 评价3 -->
+                            <div>
+                                <div class="flex items-center mb-3">
+                                    <img src="https://picsum.photos/id/69/100/100" alt="学生头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div>
+                                        <h3 class="font-medium text-ink">王丽</h3>
+                                        <div class="flex items-center text-yellow-500 text-sm">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-ink/80">
+                                    莫言老师的课让我受益匪浅，他教给我们如何从生活中汲取灵感，如何通过想象力创造出独特的文学世界。他的教学方法生动有趣，让我对写作产生了更大的热情。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 订阅区域 -->
+    <section class="py-16 md:py-24 bg-ink text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=" http:="" www.w3.org="" 2000="" svg"="" viewbox="0 0 100 100" preserveaspectratio="none"><path d="M0,0 Q25,50 50,25 T100,50 L100,100 L0,100 Z" fill="rgba(255,255,255,0.05)">')] opacity-30"&gt;</path></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-serif font-bold mb-6">获取写作灵感与独家资源</h2>
+                <p class="text-lg text-white/80 mb-8">
+                    订阅我们的写作通讯，每周获取写作技巧、灵感提示和独家优惠，助你成为更优秀的写作者。
+                </p>
+                
+                <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                    <input type="email" placeholder="输入你的邮箱地址" class="flex-1 px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-accent">
+                    <button type="submit" class="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-md transition-all duration-300 font-medium whitespace-nowrap">
+                        立即订阅
+                    </button>
+                </form>
+                
+                <p class="text-sm text-white/60 mt-4">
+                    我们尊重你的隐私，绝不会分享你的个人信息。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-ink text-white pt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <h3 class="text-2xl font-serif font-bold mb-6">Inkwell</h3>
+                    <p class="text-white/70 mb-6">
+                        为年轻写作者和自由职业者打造的创意写作在线学习平台，提供专业课程、个性化指导和社区支持。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-weibo text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-wechat text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="text-white/70 hover:text-white transition-colors duration-300">
+                            <i class="fa fa-twitter text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="../index.html" class="text-white/70 hover:text-white transition-colors duration-300">首页</a></li>
+                        <li><a href="../index.html#courses" class="text-white/70 hover:text-white transition-colors duration-300">课程</a></li>
+                        <li><a href="index.html" class="text-white/70 hover:text-white transition-colors duration-300">导师</a></li>
+                        <li><a href="../index.html#writing-plan" class="text-white/70 hover:text-white transition-colors duration-300">写作计划</a></li>
+                        <li><a href="../index.html#community" class="text-white/70 hover:text-white transition-colors duration-300">社区</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">资源中心</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">写作技巧</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">写作素材</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">出版指南</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">自由职业资源</a></li>
+                        <li><a href="#" class="text-white/70 hover:text-white transition-colors duration-300">常见问题</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-medium mb-6">联系我们</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-map-marker mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">北京市朝阳区创意园B座501</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">contact@inkwell.com</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-phone mt-1 mr-3 text-white/70"></i>
+                            <span class="text-white/70">+86 10 8888 7777</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-white/50 text-sm mb-4 md:mb-0">
+                        © 2025 Inkwell 创意写作平台. 保留所有权利.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">隐私政策</a>
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">服务条款</a>
+                        <a href="#" class="text-white/50 hover:text-white text-sm transition-colors duration-300">Cookie 政策</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.add('bg-parchment/95');
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.classList.remove('bg-parchment/95');
+            }
+        });
+    </script>
+</body>
+</html>
